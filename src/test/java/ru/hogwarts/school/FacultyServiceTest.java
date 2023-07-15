@@ -70,3 +70,4 @@ public class FacultyServiceTest {
         assertEquals(expectedList2, facultyService.getFacultyAccordingColor("зеленый"));
     }
 }
+

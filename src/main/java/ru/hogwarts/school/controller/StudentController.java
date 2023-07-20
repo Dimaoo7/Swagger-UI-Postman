@@ -48,7 +48,7 @@ public class StudentController {
     }
 
     @GetMapping //READ  http://localhost:8080/student
-    public ResponseEntity<Collection<Student>> findAllStudents(@RequestParam int age, @RequestParam String name){
+    public ResponseEntity<Collection<Student>> findAllStudents(@RequestParam(required = false) int age, @RequestParam(required = false) String name){
         if (age != 0){
             return ResponseEntity.ok(studentService.findStudentByAge(age));
         }

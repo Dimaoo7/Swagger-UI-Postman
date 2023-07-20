@@ -5,7 +5,6 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -37,13 +36,11 @@ public class FacultyService {
         return facultyRepository.findAll();
     }
 
-    public List<Faculty> getFacultyAccordingColor(String color) {
-        for (Faculty faculty : getAllFaculties()) {
-            if (faculty.getColor().equals(color)) {
-                return Collections.singletonList(faculty);
-            }
-        }
-        return null;
+    public List<Faculty> findFacultyByColor(String color) {
+        return facultyRepository.findFacultyByColor(color);
+    }
 
+    public Faculty findFacultyByNameContains(String name){
+        return facultyRepository.findFacultyByNameContains(name);
     }
 }

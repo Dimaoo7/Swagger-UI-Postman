@@ -6,7 +6,7 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 
 @RestController
@@ -43,12 +43,13 @@ public class FacultyController {
             return facultyService.deleteFaculty(id);
         }
         @GetMapping
-        public ResponseEntity<Collection<Faculty>> getAllFaculties(){
+        public ResponseEntity<Collection<Faculty>> findAllFaculties(@RequestParam String color, @RequestParam String name){
+            if (color != null && !color.isEmpty()){
+                return ResponseEntity.ok(facultyService.findFacultyByColor(color));
+            }
+            if (name != null && !name.isEmpty()){
+                return ResponseEntity.ok(Collections.singleton(facultyService.findFacultyByNameContains(name)));
+            }
             return ResponseEntity.ok(facultyService.getAllFaculties());
-        }
-
-        @GetMapping("/filter_by_color")
-        public List<Faculty> getFacultyAccordingColor(@RequestParam String color){
-            return facultyService.getFacultyAccordingColor(color);
         }
 }

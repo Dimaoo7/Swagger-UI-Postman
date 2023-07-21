@@ -3,48 +3,59 @@ package ru.hogwarts.school;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class FacultyServiceTest {
+
+    @Mock
+    private FacultyRepository facultyRepository;
+
+    @InjectMocks
     private FacultyService facultyService;
-    private Faculty expectedFaculty;
+    Faculty expectedFaculty;
 
     @BeforeEach
     public void BeforeEach(){
-        facultyService = new FacultyService();
-        expectedFaculty = new Faculty(1L,"Программирование", "зеленый");
+        facultyService = new FacultyService(facultyRepository);
+        expectedFaculty = new Faculty(1L,"Boris", "red");
         facultyService.createFaculty(expectedFaculty);
     }
     @Test
     public void createFacultyTest() {
-        assertEquals(expectedFaculty, facultyService.createFaculty(expectedFaculty));
-        assertTrue(facultyService.getAllFaculties().contains(expectedFaculty));
+        Faculty expected = new Faculty(1L, "Name", "Color");
+        Mockito.when(facultyRepository.save(expected)).thenReturn(expected);
+        Faculty actual = facultyService.createFaculty(expected);
+        assertEquals(expected.getName(), actual.getName());
     }
     @Test
     public void findFacultyTest(){
+        Mockito.when(facultyRepository.getReferenceById(1L)).thenReturn(expectedFaculty);
+
         assertEquals(expectedFaculty.getName(), facultyService.findFaculty(1L).getName());
         assertEquals(expectedFaculty.getColor(), facultyService.findFaculty(1L).getColor());
     }
 
     @Test
     public void editFacultyTest(){
-        assertEquals(expectedFaculty.getName(), facultyService.findFaculty(1L).getName());
-        assertEquals(expectedFaculty.getColor(), facultyService.findFaculty(1L).getColor());
-
-        Faculty newFaculty = new Faculty(1L,"Ветеринар", "красный");
-        facultyService.editFaculty(newFaculty);
-
-        assertEquals(newFaculty.getName(), facultyService.findFaculty(1L).getName());
-        assertEquals(newFaculty.getColor(), facultyService.findFaculty(1L).getColor());
+        Faculty expected = new Faculty(1L, "Name", "Color");
+        Mockito.when(facultyRepository.save(expected)).thenReturn(expected);
+        Faculty actual = facultyService.editFaculty(expected);
+        assertEquals(expected.getName(), actual.getName());
     }
     @Test
     public void deleteStudentTest(){
@@ -54,20 +65,16 @@ public class FacultyServiceTest {
 
     @Test
     public void getFacultiesAccordingAgeTest(){
-        facultyService.createFaculty(new Faculty(2L, "1111", "синий"));
-        facultyService.createFaculty(new Faculty(3L, "2222", "зеленый"));
-        facultyService.createFaculty(new Faculty(4L, "3333", "зеленый"));
-
-        List<Faculty> expectedList1 = new ArrayList<>(List.of(
-                new Faculty(2L, "1111", "синий")
-        ));
-        assertEquals(expectedList1, facultyService.getFacultyAccordingColor("синий"));
-
-        List<Faculty>expectedList2 = new ArrayList<>(List.of(
-                new Faculty(3L, "2222", "зеленый"),
-                new Faculty(4L, "3333", "зеленый")
-        ));
-        assertEquals(expectedList2, facultyService.getFacultyAccordingColor("зеленый"));
+        List<Faculty> expected = new ArrayList<>();
+        Faculty faculty1 = new Faculty(1L, "Name", "Color");
+        Faculty faculty2 = new Faculty(2L, "Name2", "Color2");
+        Faculty faculty3 = new Faculty(3L, "Name3", "Color3");
+        expected.add(faculty1);
+        expected.add(faculty2);
+        expected.add(faculty3);
+        Mockito.when(facultyRepository.findAll()).thenReturn(expected);
+        Collection<Faculty> actual = facultyService.getAllFaculties();
+        assertEquals(expected, actual);
     }
 }
 

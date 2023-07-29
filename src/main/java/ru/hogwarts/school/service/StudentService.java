@@ -57,6 +57,4 @@ public class StudentService {
     public List<Student> findStudentByFaculty(Faculty faculty){
         return studentRepository.findStudentByFaculty(faculty);
     }
-
-
 }

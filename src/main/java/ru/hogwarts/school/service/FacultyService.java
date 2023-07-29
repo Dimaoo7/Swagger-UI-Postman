@@ -6,6 +6,7 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -46,6 +47,6 @@ public class FacultyService {
     }
 
     public Faculty findFacultyByStudentIgnoreCase(Student student){
-        return facultyRepository.findFacultyByStudentIgnoreCase(student);
+        return facultyRepository.findFacultyByStudent(Collections.singletonList(student));
     }
 }

@@ -91,15 +91,15 @@ public class StudentServiceTest {
                 new Student(3L, "Bik", 15)
         ));
 
-        Mockito.when(studentRepository.findAll()).thenReturn(expextedList1);
-        assertEquals(expextedList1, studentService.getStudentsAccordingAge(15));
+        Mockito.when(studentRepository.findStudentByAge(15)).thenReturn(expextedList1);
+        assertEquals(expextedList1, studentService.findStudentByAge(15));
 
         List<Student>expextedList2 = new ArrayList<>(List.of(
                 new Student(2L, "Rik", 25),
                 new Student(4L, "Mik", 25)
         ));
 
-        Mockito.when(studentRepository.findAll()).thenReturn(expextedList2);
-        assertEquals(expextedList2, studentService.getStudentsAccordingAge(25));
+        Mockito.when(studentRepository.findStudentByAge(25)).thenReturn(expextedList2);
+        assertEquals(expextedList2, studentService.findStudentByAge(25));
     }
 }

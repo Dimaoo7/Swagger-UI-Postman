@@ -1,12 +1,11 @@
 package ru.hogwarts.school.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
-@Entity(name = "FacultyRepository")
+
+@Entity(name = "Faculty")
 public class Faculty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +13,11 @@ public class Faculty {
     private String name;
     private String color;
 
+    @OneToMany (mappedBy = "faculty")
+    private List<Student> student;
+
     public Faculty() {
+
     }
 
     public Faculty(Long id, String name, String color) {

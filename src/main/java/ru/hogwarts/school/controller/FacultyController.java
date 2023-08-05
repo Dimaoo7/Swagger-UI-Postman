@@ -7,57 +7,60 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
-import java.util.Collections;
 
 
 @RestController
-@RequestMapping("/faculty")
+@RequestMapping("faculty")
 public class FacultyController {
+    private final FacultyService facultyService;
 
-        private final FacultyService facultyService;
+    public FacultyController(FacultyService facultyService) {
+        this.facultyService = facultyService;
+    }
+    @PostMapping //CREATE  http://localhost:8080/faculty
+    public Faculty createStudent(@RequestBody Faculty faculty){
+        return facultyService.createFaculty(faculty);
+    }
+    @GetMapping("{id}") //READ  http://localhost:8080/faculty/1
+    public ResponseEntity<Faculty> findFaculty(@PathVariable Long id){
+        Faculty faculty = facultyService.findFaculty(id).orElse(null);
+        if(faculty == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(faculty);
+    }
+    @PutMapping //UPDATE  http://localhost:8080/faculty
+    public ResponseEntity<Faculty> editFaculty(@RequestBody Faculty faculty){
+        Faculty editiedFaculty = facultyService.editFaculty(faculty);
+        if(editiedFaculty == null){
+            ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(faculty);
+    }
+    @DeleteMapping("{id}") //DELETE  http://localhost:8080/faculty/1
+    public ResponseEntity deleteFaculty(@PathVariable Long id){
+        facultyService.deleteFaculty(id);
+        return ResponseEntity.ok().build();
+    }
+    @GetMapping //READ  http://localhost:8080/faculty
+    public ResponseEntity<Collection<Faculty>> getAllFaculties(){
+        return ResponseEntity.ok(facultyService.getAllFaculties());
+    }
 
-        public FacultyController(FacultyService facultyService) {
-            this.facultyService = facultyService;
+    @GetMapping("/filter_by_color") //READ  http://localhost:8080/faculty/filter_by_color
+    public ResponseEntity getFacultyAccordingNameOrColor(@RequestParam(required = false, name = "name") String name,
+                                                         @RequestParam(required = false, name = "color") String color){
+        if (name != null && !name.isEmpty() && !name.isBlank()) {
+            return ResponseEntity.ok(facultyService.getFacultyAccordingName(name));
         }
-        @PostMapping
-        public Faculty createStudent(@RequestBody Faculty faculty){
-            return facultyService.createFaculty(faculty);
+        if(color != null && !color.isEmpty() && !color.isBlank()){
+            return ResponseEntity.ok(facultyService.getFacultyAccordingColor(color));
         }
-        @GetMapping("{id}")
-        public ResponseEntity<Faculty> findFaculty(@RequestBody @PathVariable Long id){
-            Faculty faculty = facultyService.findFaculty(id);
-            if(faculty == null){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(faculty);
-        }
-        @PutMapping("{id}")
-        public ResponseEntity<Faculty> editFaculty(@RequestBody Faculty faculty){
-            Faculty editiedFaculty = facultyService.editFaculty(faculty);
-            if(editiedFaculty == null){
-                ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(faculty);
-        }
-        @DeleteMapping("{id}")
-        public String deleteFaculty(@RequestBody @PathVariable Long id){
-            return facultyService.deleteFaculty(id);
-        }
-        @GetMapping
-        public ResponseEntity<Collection<Faculty>> findAllFaculties(@RequestParam(required = false) String color,
-                                                                    @RequestParam(required = false) String name){
-            if (color != null && !color.isEmpty()){
-                return ResponseEntity.ok(facultyService.findFacultyByColor(color));
-            }
-            if (name != null && !name.isEmpty()){
-                return ResponseEntity.ok(Collections.singleton(facultyService.findFacultyByNameContains(name)));
-            }
-            return ResponseEntity.ok(facultyService.getAllFaculties());
-        }
+        return getAllFaculties();
+    }
 
-
-        @GetMapping("{id}/students")
-        public ResponseEntity<Faculty> findFacultyByStudentIgnoreCase(@RequestBody Student student){
-            return ResponseEntity.ok(facultyService.findFacultyByStudentIgnoreCase(student));
-        }
+    @GetMapping("/find_faculty_by_student")
+    public Faculty findFacultyByStudent (@RequestBody Student student){
+        return facultyService.findFacultyByStudent(student);
+    }
 }

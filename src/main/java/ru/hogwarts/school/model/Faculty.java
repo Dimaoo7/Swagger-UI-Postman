@@ -69,4 +69,8 @@ public class Faculty {
                 "название факультета:" + name + '\n' +
                 "цвет факультета: " + color + '\n';
     }
+
+    public Faculty get() {
+        return this;
+    }
 }

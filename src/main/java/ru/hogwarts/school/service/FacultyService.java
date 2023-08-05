@@ -5,48 +5,45 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 
 @Service
 public class FacultyService {
-
     private final FacultyRepository facultyRepository;
 
     public FacultyService(FacultyRepository facultyRepository) {
         this.facultyRepository = facultyRepository;
     }
+
     public Faculty createFaculty(Faculty faculty) {
         return facultyRepository.save(faculty);
     }
 
-    public Faculty findFaculty(Long id) {
-        return facultyRepository.getReferenceById(id);
+    public Optional<Faculty> findFaculty(Long id) {
+        return facultyRepository.findById(id);
     }
 
     public Faculty editFaculty(Faculty faculty) {
         return facultyRepository.save(faculty);
     }
 
-    public String deleteFaculty(Long id) {
+    public void deleteFaculty(Long id) {
         facultyRepository.deleteById(id);
-        return id + " was deleted";
     }
 
     public Collection<Faculty> getAllFaculties() {
         return facultyRepository.findAll();
     }
 
-    public List<Faculty> findFacultyByColor(String color) {
-        return facultyRepository.findFacultyByColorIgnoreCase(color);
+    public List<Faculty> getFacultyAccordingName(String name) {
+        return facultyRepository.findFacultyByNameContainingIgnoreCase(name);
+    }
+    public List<Faculty> getFacultyAccordingColor(String color) {
+        return facultyRepository.findFacultyByColorContainsIgnoreCase(color);
     }
 
-    public Faculty findFacultyByNameContains(String name){
-        return facultyRepository.findFacultyByNameContainsIgnoreCase(name);
-    }
-
-    public Faculty findFacultyByStudentIgnoreCase(Student student){
-        return facultyRepository.findFacultyByStudent(Collections.singletonList(student));
+    public Faculty findFacultyByStudent(Student student) {
+        return facultyRepository.findFacultyByStudent(student);
     }
 }

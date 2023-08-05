@@ -7,7 +7,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
 import java.util.List;
-
+import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -20,14 +20,10 @@ public class StudentService {
 
     public Student createStudent(Student student) {
         return studentRepository.save(student);
-
     }
 
-    public Student findStudent(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("id is null");
-        }
-        return studentRepository.getReferenceById(id);
+    public Optional<Student> findStudent(Long id) {
+        return studentRepository.findById(id);
     }
 
     public Student editStudent(Student student) {
@@ -42,16 +38,12 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public List<Student> findStudentByAge(int age) {
+    public List<Student> getStudentsAccordingAge(int age) {
         return studentRepository.findStudentByAge(age);
     }
 
-    public Student findStudentByNameContains(String name){
-        return studentRepository.findStudentByNameContains(name);
-    }
-
-    public List<Student> findStudentByAgeBetween(int min, int max){
-        return studentRepository.findByAgeBetween(min, max);
+    public List<Student> findStudentByAgeBetween(int minAge, int maxAge){
+        return studentRepository.findStudentByAgeBetween(minAge, maxAge);
     }
 
     public List<Student> findStudentByFaculty(Faculty faculty){

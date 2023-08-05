@@ -2,18 +2,18 @@ package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.AvatarRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 
-import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -21,23 +21,74 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 @Transactional
 public class AvatarService {
 
-    @Value("${avatar.path}")
-    private String avatarPath;
+    @Value("${path.to.avatars.folder}")
+    private String avatarsDir;
 
-    private final AvatarRepository repository;
+    private final AvatarRepository avatarRepository;
+    private final StudentRepository studentRepository;
 
-    public AvatarService(AvatarRepository repository) {
-        this.repository = repository;
+    public AvatarService(AvatarRepository avatarRepository, StudentRepository studentRepository) {
+        this.avatarRepository = avatarRepository;
+        this.studentRepository = studentRepository;
+    }
+
+    public void uploadAvatarFromInternet(Long studentId, String path, String avatarName) throws IOException {
+        File avatarFile = new File(path);
+        Optional<Student> optionalStudent = studentRepository.findById(studentId);
+        Student student = optionalStudent.orElse(null);
+
+        if (avatarName == null) {
+            throw new IllegalArgumentException();
+        }
+
+
+        Path filePath = Path.of(path);
+        Files.createDirectories(filePath.getParent());
+        Files.deleteIfExists(filePath);
+
+        try (
+                InputStream is = Files.newInputStream(avatarFile.toPath());
+                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
+        ) {
+            bis.transferTo(bos);
+        }
+
+        Avatar avatar = findAvatar(studentId);
+        avatar.setStudent(student);
+        avatar.setFilePath(filePath.toString());
+        avatar.setFileSize(avatarFile.length());
+
+        Path path1 = Paths.get(String.valueOf(filePath));
+        String fileType = Files.probeContentType(path1);
+        avatar.setMediaType(fileType);
+
+        byte[] fileBytes = Files.readAllBytes(path1);
+        avatar.setData(fileBytes);
+        avatarRepository.save(avatar);
+
     }
 
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
-        Student student = repository.getById(studentId).getStudent();
-        Path filePath = Path.of(avatarPath, student + "." + getExtensions(avatarFile.getOriginalFilename()));
+        Optional<Student> optionalStudent = studentRepository.findById(studentId);
+        if (optionalStudent.isPresent() && avatarFile == null) {
+            throw new IllegalArgumentException();
+        }
+        Student student = optionalStudent.orElse(null);
+        String originalFileName = avatarFile.getOriginalFilename();
+
+        if (originalFileName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Path filePath = Path.of(avatarsDir, studentId + getExtensions(originalFileName));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
+
         try (
                 InputStream is = avatarFile.getInputStream();
-                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);//
                 BufferedInputStream bis = new BufferedInputStream(is, 1024);
                 BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
         ) {
@@ -48,36 +99,17 @@ public class AvatarService {
         avatar.setFilePath(filePath.toString());
         avatar.setFileSize(avatarFile.getSize());
         avatar.setMediaType(avatarFile.getContentType());
-        avatar.setPreview(generateImagePreview(filePath));
-        repository.save(avatar);
+        avatar.setData(avatarFile.getBytes());
+        avatarRepository.save(avatar);
     }
 
+
+
     private String getExtensions(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") + 1);
+        return fileName.substring(fileName.lastIndexOf("."));
     }
 
     public Avatar findAvatar(Long studentId) {
-        return repository.findAvatarByStudentId(studentId).orElse(new Avatar());
+        return avatarRepository.findAvatarByStudentId(studentId).orElse(new Avatar());
     }
-
-    private byte[] generateImagePreview(Path path) throws IOException {
-        try (
-                InputStream is = Files.newInputStream(path);
-                BufferedInputStream bis = new BufferedInputStream(is, 1024);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream()){
-                BufferedImage image = ImageIO.read(bis);
-
-                int height = image.getHeight() / (image.getWidth() / 100);
-                BufferedImage preview = new BufferedImage(100, height, image.getType());
-                Graphics2D g = preview.createGraphics();
-                g.drawImage(image, 0, 0, 100, height, null);
-                g.dispose();
-                return baos.toByteArray();
-        }
-    }
-
-    private String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") + 1);
-    }
-
 }

@@ -94,53 +94,42 @@ class ApplicationTests_TestRestTemplate {
                 "http://localhost:" + port + "/faculty", faculty, String.class));
     }
 
-    /**
-     * тестируем поиск студента
-     */
+
     @Test
     void findStudent() {
         assertNotNull(this.testRestTemplate.getForObject(
                 "http://localhost:" + port + "/student/1", String.class));
     }
 
-    /**
-     * тестируем поиск факультета
-     */
     @Test
     void findFaculty() {
         assertNotNull(this.testRestTemplate.getForObject(
                 "http://localhost:" + port + "/faculty/1", String.class));
     }
 
-    /**
-     * тестируем изменение студента
-     */
+
     @Test
     public void testEditStudent() {
-        //Создаю студента для замены им студента в таблице БД.
-        //Метод findLastStudentId() возвращет последний id в таблице. Это id того же студента,
-        //который был добавлен в тесте на добавление студента в таблицу БД.
+
         Student student = new Student(findLastStudentId(), "Федор Конюхов", 78);
 
-        //Используя запрос контроллера, изменяем студента Василия Теркина, на Федора Конюхова.
+
         this.testRestTemplate.put("http://localhost:" + port + "/student", student);
 
-        //Получаем последнего студента из таблицы. т.к. findById возвращает Optional, то создаем переменную такого типа.
+
         Optional<Student> optionalStudent = studentRepository.findById(findLastStudentId());
 
-        //Проверяем что студент извлечен и существует.
+
         assertTrue(optionalStudent.isPresent());
 
-        //Извлекаем студента из Optional и проверяем, что извлеченный студент соответствует добавленному.
+
         Student actualStudent = optionalStudent.get();
         assertEquals(student, actualStudent);
     }
 
-    /**
-     * тестируем изменение факультета
-     */
+
     @Test
-    public void testEditFaculty() { //специально ради интереса двумя разными методами сделал.
+    public void testEditFaculty() {
         Faculty faculty = new Faculty(findLastFacultyId(), "КотэРван", "серый");
 
         ResponseEntity<Faculty> response = facultyController.editFaculty(faculty);
@@ -151,25 +140,21 @@ class ApplicationTests_TestRestTemplate {
         Assertions.assertEquals(expectedCode, actualStatusCodeValue, "коды не совпадают");
     }
 
-    /**
-     * тестируем удаление студента
-     */
+
     @Test
     void deleteStudentTest() {
-        //нахожу последнего студента, сохраняю его в переменную, а так же и его id, ...
+
         Student lastStudent = studentRepository.findById(findLastStudentId()).orElse(null);
         Long lastStudentId = (lastStudent == null) ? null : lastStudent.getId();
 
-        //...после чего я его удалю, используя запрос контроллера, и...
+
         this.testRestTemplate.delete("http://localhost:" + port + "/student/" + findLastStudentId());
 
-        //...далее проверяю, совпадают ли id последнего студента до и после операции удаления
+
         assertNotEquals(findLastStudentId(), lastStudentId);
     }
 
-    /**
-     * тестируем удаление факультета
-     */
+
     @Test
     void deleteFacultyTest() {
         Faculty lastFaculty = facultyRepository.findById(findLastFacultyId()).orElse(null);
@@ -180,9 +165,7 @@ class ApplicationTests_TestRestTemplate {
         assertNotEquals(findLastFacultyId(), lastFacultyId);
     }
 
-    /**
-     * тестируем получение всех студентов
-     */
+
     @Test
     void getAllStudentsTest() {
 
@@ -202,33 +185,30 @@ class ApplicationTests_TestRestTemplate {
 
     @Test
     void getAllFacultyTest() {
-        //создание заголовков
+
         HttpHeaders headers = new HttpHeaders();
-//        headers.set("accept", "application/json");
-//        headers.set("Authorization", "Bearer JWT TOKEN HERE");
+
         HttpEntity requestEntity = new HttpEntity<>(null, headers);
-        //создание запроса через метод exchange
+
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
                 "http://localhost:" + port + "/faculty", HttpMethod.GET, requestEntity,
                 new ParameterizedTypeReference<List<Faculty>>() {
                 });
-        //получение списка студентов из тела запроса
+
         List<Faculty> faculties = response.getBody();
         System.out.println("faculties = " + faculties);
         assertNotNull(faculties);
     }
 
-    /**
-     * тестируем получение студентов по возрасту
-     */
+
     @Test
     void getStudentsAccordingAge() {
-        //создаю студента
+
         int studentsAge = 25;
         studentRepository.save(new Student(findLastStudentId() + 1, "Лена Целофанова", studentsAge));
         long studentId = findLastStudentId();
 
-        //в блок try оборачиваю конструкцию, чтобы студент в блоке finally гарантированно удалялся.
+
         try {
             assertNotNull(this.testRestTemplate.getForObject(
                     "http://localhost:" + port + "/student/filter_by_age/" + studentsAge, String.class));
@@ -239,17 +219,16 @@ class ApplicationTests_TestRestTemplate {
         }
     }
 
-    /**
-     * тестируем получение факультетов по цвету
-     */
+
+
     @Test
     void getFacultyAccordingColor() {
-        //создаю студента
+
         String facultyColor = "малиновый";
         facultyRepository.save(new Faculty(findLastFacultyId() + 1, "тестовыйФакультет", facultyColor));
         long facultyId = findLastFacultyId();
 
-        //в блок try оборачиваю конструкцию, чтобы факультет в блоке finally гарантированно удалялся.
+
         try {
             assertNotNull(this.testRestTemplate.getForObject(
                     "http://localhost:" + port + "/faculty/filter_by_color/?color=" + facultyColor, String.class));
@@ -260,9 +239,7 @@ class ApplicationTests_TestRestTemplate {
         }
     }
 
-    /**
-     * тестируем получение студентов по возрасту между мин и макс
-     */
+
     @Test
     void findStudentByAgeBetween() {
         int studentsAgeMin = 25;
@@ -286,9 +263,7 @@ class ApplicationTests_TestRestTemplate {
             studentRepository.deleteById(findLastStudentId());
         }
     }
-    /**
-     * тестируем поиск студента по факультету
-     */
+
     @Test
     void findStudentByFaculty() {
         int studentsAge = 25;
@@ -305,9 +280,7 @@ class ApplicationTests_TestRestTemplate {
             studentRepository.deleteById(findLastStudentId());
         }
     }
-    /**
-     * тестируем поиск факультета по студенту
-     */
+
     @Test
     void findFacultyByStudent() {
         Faculty faculty = new Faculty(findLastFacultyId() + 1, "тестовыйФакультет", "красный");

@@ -3,105 +3,193 @@ package ru.hogwarts.school;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.hogwarts.school.model.Avatar;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.AvatarRepository;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
-    private StudentService studentService;
+    @Mock
+    private FacultyRepository facultyRepository;
     @Mock
     private StudentRepository studentRepository;
-    Student expectedStudent;
+    @Mock
+    private AvatarRepository avatarRepository;
 
+    @InjectMocks
+    private FacultyService facultyService;
+    @InjectMocks
+    private StudentService studentService;
     @BeforeEach
-    public void BeforeEach(){
-        studentService = new StudentService(studentRepository);
-        expectedStudent = new Student(1L,"Boris", 35);
-        studentService.createStudent(expectedStudent);
+    public void beforeEach() {
+//        studentService = new StudentService(studentRepository, avatarRepository);
     }
 
     @Test
     public void createStudentTest() {
-        Mockito.when(studentRepository.save(expectedStudent)).thenReturn(expectedStudent);
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1)))
+                .thenReturn(new Student(1L, "Name", 1));
 
-        assertEquals(expectedStudent, studentService.createStudent(expectedStudent));
+        Student expected = new Student(1L, "Name", 1);
+
+        Student actual = studentService.createStudent(new Student(1L, "Name", 1));
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void findStudentTest(){
-        Mockito.when(studentRepository.getById(1L)).thenReturn(expectedStudent);
+    public void findFacultyTest() {
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1)))
+                .thenReturn(new Student(1L, "Name", 1));
 
-        assertEquals(expectedStudent.getName(), studentService.findStudent(1L).get().getName());
-        assertEquals(expectedStudent.getAge(), studentService.findStudent(1L).get().getAge());
+
+        Student student = new Student(1L, "Name", 1);
+        Mockito.when(studentRepository.findById(1L)).thenReturn(Optional.ofNullable(student));
+
+        studentService.createStudent(new Student(1L, "Name", 1));
+
+        Optional<Student> expected = Optional.ofNullable(new Student(1L, "Name", 1));
+
+        Optional<Student> actual = studentService.findStudent(1L);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void editStudentTest(){
-        Mockito.when(studentRepository.getById(1L)).thenReturn(expectedStudent);
+    public void editFacultyTest() {
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1)))
+                .thenReturn(new Student(1L, "Name", 1));
 
-        assertEquals(expectedStudent.getName(), studentService.findStudent(1L).get().getName());
-        assertEquals(expectedStudent.getAge(), studentService.findStudent(1L).get().getAge());
+        studentService.createStudent(new Student(1L, "Name", 1));
 
-        Student newStudent = new Student(1L,"Caesar", 33);
-        studentService.editStudent(newStudent);
+        Student expected = new Student(1L, "Name", 1);
 
-        Mockito.when(studentRepository.getById(1L)).thenReturn(newStudent);
+        Student actual = studentService.editStudent(new Student(1L, "Name", 1));
 
-        assertEquals(newStudent.getName(), studentService.findStudent(1L).get().getName());
-        assertEquals(newStudent.getAge(), studentService.findStudent(1L).get().getAge());
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void deleteStudentTest(){
+    public void deleteFacultyTest() {
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1)))
+                .thenReturn(new Student(1L, "Name", 1));
+
+        studentService.createStudent(new Student(1L, "Name", 1));
+
         studentService.deleteStudent(1L);
+
         verify(studentRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    public void getAllStudentsTest(){
-        List<Student>students = new ArrayList<>();
-        Student student1 = new Student(1L, "1111", 1);
-        students.add(student1);
-        Student student2 = new Student(2L, "2222", 2);
-        students.add(student2);
+    public void findAllByColorTest() {
 
-        Mockito.when(studentRepository.findAll()).thenReturn(students);
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1))).thenReturn(new Student(1L, "Name", 1));
+        Mockito.when(studentRepository.save(new Student(2L, "Name1", 2))).thenReturn(new Student(2L, "Name1", 2));
+        Mockito.when(studentRepository.save(new Student(3L, "Name2", 2))).thenReturn(new Student(3L, "Name2", 2));
+        Mockito.when(studentRepository.save(new Student(4L, "Name3", 4))).thenReturn(new Student(4L, "Name3", 4));
 
-        assertTrue(studentService.getAllStudents().containsAll(students));
+        Student student = studentService.createStudent(new Student(1L, "Name", 1));
+        Student student1 = studentService.createStudent(new Student(2L, "Name1", 2));
+        Student student2 = studentService.createStudent(new Student(3L, "Name2", 2));
+        Student student3 = studentService.createStudent(new Student(4L, "Name3", 4));
+
+
+        List<Student> expected = new ArrayList<>();
+        expected.add(student1);
+        expected.add(student2);
+
+        Mockito.when(studentRepository.findByAge(2)).thenReturn(expected);
+
+        List<Student> actual = studentService.findStudentByAge(2);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void getStudentsAccordingAgeTest(){
+    void findAllByAgeBetween() {
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1))).thenReturn(new Student(1L, "Name", 1));
+        Mockito.when(studentRepository.save(new Student(2L, "Name1", 2))).thenReturn(new Student(2L, "Name1", 2));
+        Mockito.when(studentRepository.save(new Student(3L, "Name2", 2))).thenReturn(new Student(3L, "Name2", 2));
+        Mockito.when(studentRepository.save(new Student(4L, "Name3", 4))).thenReturn(new Student(4L, "Name3", 4));
 
-        studentService.createStudent(new Student(2L, "Rik", 25));
-        studentService.createStudent(new Student(3L, "Bik", 15));
-        studentService.createStudent(new Student(4L, "Mik", 25));
+        Student student = studentService.createStudent(new Student(1L, "Name", 1));
+        Student student1 = studentService.createStudent(new Student(2L, "Name1", 2));
+        Student student2 = studentService.createStudent(new Student(3L, "Name2", 2));
+        Student student3 = studentService.createStudent(new Student(4L, "Name3", 4));
 
-        List<Student>expextedList1 = new ArrayList<>(List.of(
-                new Student(3L, "Bik", 15)
-        ));
 
-        Mockito.when(studentRepository.findStudentByAge(15)).thenReturn(expextedList1);
-        assertEquals(expextedList1, studentService.getStudentsAccordingAge(15));
+        List<Student> expected = new ArrayList<>();
+        expected.add(student1);
+        expected.add(student2);
+        expected.add(student3);
 
-        List<Student>expextedList2 = new ArrayList<>(List.of(
-                new Student(2L, "Rik", 25),
-                new Student(4L, "Mik", 25)
-        ));
+        Mockito.when(studentRepository.findAllByAgeBetween(2,4)).thenReturn(expected);
 
-        Mockito.when(studentRepository.findStudentByAge(25)).thenReturn(expextedList2);
-        assertEquals(expextedList2, studentService.getStudentsAccordingAge(25));
+        List<Student> actual = studentService.findAllByAgeBetween(2,4);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findStudentByFaculty() {
+        Mockito.when(studentRepository.save(new Student(1L, "Name", 1))).thenReturn(new Student(1L, "Name", 1));
+        Mockito.when(studentRepository.save(new Student(2L, "Name1", 2))).thenReturn(new Student(2L, "Name1", 2));
+        Mockito.when(studentRepository.save(new Student(3L, "Name2", 2))).thenReturn(new Student(3L, "Name2", 2));
+
+
+        Student student = studentService.createStudent(new Student(1L, "Name", 1));
+        Student student1 = studentService.createStudent(new Student(2L, "Name1", 2));
+        Student student2 = studentService.createStudent(new Student(3L, "Name2", 2));
+
+
+        List<Student> expected = new ArrayList<>();
+        expected.add(student);
+        expected.add(student1);
+        expected.add(student2);
+
+        Mockito.when(facultyRepository.save(new Faculty(1L, "Name", "Color"))).thenReturn(new Faculty(1L, "Name", "Color"));
+
+        Faculty faculty = facultyService.createFaculty(new Faculty(1L, "Name", "Color"));
+
+
+        Mockito.when(studentRepository.findAllByFaculty_id(faculty.getId())).thenReturn(expected);
+
+        List<Student> actual = studentService.findAllStudensByFaculty(faculty.getId());
+
+        assertEquals(expected,actual);
+
+    }
+
+
+
+    @Test
+    void findAvatarTest() {
+        Mockito.when(avatarRepository.findByStudentId(1L))
+                .thenReturn(Optional.of(new Avatar()));
+
+        Student student = studentService.createStudent(new Student(1L, "Name", 1));
+
+        Optional<Avatar> expected = Optional.of(new Avatar());
+
+        Optional<Avatar> actual = avatarRepository.findByStudentId(1L);
+
+        assertEquals(expected,actual);
+
     }
 }

@@ -1,65 +1,93 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.exceptions.NotFoundException;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("/student")
 public class StudentController {
+
     private final StudentService studentService;
+
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-    @PostMapping //CREATE  http://localhost:8080/student
-    public Student createStudent(@RequestBody Student student){
-        return studentService.createStudent(student);
-    }
-    @GetMapping("{id}") //READ  http://localhost:8080/student/1
-    public ResponseEntity<Student> findStudent(@PathVariable Long id){
-        Student student = studentService.findStudent(id).orElse(null);
-        if(student == null){
-            return ResponseEntity.notFound().build();
+
+
+    @PostMapping
+    public ResponseEntity<Student> createFaculty(@RequestBody Student student) {
+        if (student != null) {
+            return ResponseEntity.ok(studentService.createStudent(student));
         }
-        return ResponseEntity.ok(student);
-    }
-    @PutMapping //UPDATE  http://localhost:8080/student/
-    public ResponseEntity<Student> editStudent(@RequestBody Student student){
-        Student edittingStudent = studentService.editStudent(student);
-        if(edittingStudent == null){
-            ResponseEntity.notFound().build();
-        }
-        System.out.println("ResponseEntity " + ResponseEntity.ok(student));
-        return ResponseEntity.ok(student);
-    }
-    @DeleteMapping("{id}") //DELETE  http://localhost:8080/student/1
-    public ResponseEntity<Student> deleteStudent(@RequestBody @PathVariable Long id){
-        studentService.deleteStudent(id);
-        return ResponseEntity.ok().build();
-    }
-    @GetMapping //READ  http://localhost:8080/student
-    public ResponseEntity<Collection<Student>> getAllStudents(){
-        return ResponseEntity.ok(studentService.getAllStudents());
-    }
-    @GetMapping("/filter_by_age/{age}") //READ  http://localhost:8080/student/filter_by_age/20
-    public List<Student> getStudentsAccordingAge(@PathVariable int age){
-        return studentService.getStudentsAccordingAge(age);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @GetMapping("/find_age_between")
-    public List<Student> findStudentByAgeBetween(@RequestParam int minAge,
-                                                 @RequestParam int maxAge){
-        return studentService.findStudentByAgeBetween(minAge, maxAge);
+    @GetMapping("{id}")
+    public ResponseEntity<Optional<Student>> findFaculty(@PathVariable Long id) {
+        try {
+            if (id != null) {
+                return ResponseEntity.ok(studentService.findStudent(id));
+            }
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-    @GetMapping("/find_student_by_faculty")
-    public List<Student> findStudentByFaculty(@RequestBody Faculty faculty){
-        return studentService.findStudentByFaculty(faculty);
+
+    @PutMapping
+    public ResponseEntity<Student> editFaculty(@RequestBody Student student) {
+        try {
+            if (student != null) {
+                return ResponseEntity.ok(studentService.editStudent(student));
+            }
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
     }
+
+
+    @DeleteMapping("{id}")
+    public void deleteFaculty(@PathVariable Long id) {
+        studentService.deleteStudent(id);
+    }
+
+    @GetMapping("/findAllByAge/")
+    public ResponseEntity<List<Student>> findStudentByAge(Integer age) {
+        if (age != null) {
+            return ResponseEntity.ok(studentService.findStudentByAge(age));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Student>> findAllByAgeBetween(Integer min, Integer max) {
+        if (min != null || max != null) {
+            return ResponseEntity.ok(studentService.findAllByAgeBetween(min, max));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping("/StudentByFaculty/")
+    public ResponseEntity<List<Student>> findByFacultyId(Long id) {
+        if (id != null) {
+            return ResponseEntity.ok(studentService.findAllStudensByFaculty(id));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+
+
+
+
 }

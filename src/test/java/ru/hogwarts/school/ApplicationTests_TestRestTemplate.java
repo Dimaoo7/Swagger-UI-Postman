@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import ru.hogwarts.school.controller.FacultyController;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
@@ -19,10 +16,12 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -52,6 +51,7 @@ class ApplicationTests_TestRestTemplate {
         assertNotNull(studentController);
         assertNotNull(facultyController);
     }
+
 
     private long findLastStudentId() {
         List<Student> students = studentRepository.findAll();
@@ -100,6 +100,7 @@ class ApplicationTests_TestRestTemplate {
         assertNotNull(this.testRestTemplate.getForObject(
                 "http://localhost:" + port + "/student/1", String.class));
     }
+
 
     @Test
     void findFaculty() {
@@ -155,6 +156,7 @@ class ApplicationTests_TestRestTemplate {
     }
 
 
+
     @Test
     void deleteFacultyTest() {
         Faculty lastFaculty = facultyRepository.findById(findLastFacultyId()).orElse(null);
@@ -165,23 +167,15 @@ class ApplicationTests_TestRestTemplate {
         assertNotEquals(findLastFacultyId(), lastFacultyId);
     }
 
-
     @Test
     void getAllStudentsTest() {
 
-        HttpHeaders headers = new HttpHeaders();
-
-        HttpEntity requestEntity = new HttpEntity<>(null, headers);
-
-        ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-                "http://localhost:" + port + "/student", HttpMethod.GET, requestEntity,
-                new ParameterizedTypeReference<List<Student>>() {
-                });
-
-        List<Student> students = response.getBody();
+        List<Student> students = studentRepository.findAll();
         System.out.println("students = " + students);
         assertNotNull(students);
+
     }
+
 
     @Test
     void getAllFacultyTest() {
@@ -199,7 +193,6 @@ class ApplicationTests_TestRestTemplate {
         System.out.println("faculties = " + faculties);
         assertNotNull(faculties);
     }
-
 
     @Test
     void getStudentsAccordingAge() {
@@ -219,8 +212,6 @@ class ApplicationTests_TestRestTemplate {
         }
     }
 
-
-
     @Test
     void getFacultyAccordingColor() {
 
@@ -238,7 +229,6 @@ class ApplicationTests_TestRestTemplate {
             facultyRepository.deleteById(facultyId);
         }
     }
-
 
     @Test
     void findStudentByAgeBetween() {

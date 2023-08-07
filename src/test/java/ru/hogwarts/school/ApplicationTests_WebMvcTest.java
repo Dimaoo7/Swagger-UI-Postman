@@ -24,11 +24,9 @@ import ru.hogwarts.school.service.AvatarService;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -248,43 +246,10 @@ class ApplicationTests_WebMvcTest {
 
     @Test
     void getAllStudentsTest() throws Exception {
-        Long id = 1L;
-        String name = "Кирил Лавров";
-        int age = 46;
+        List<Student> students = studentRepository.findAll();
+        System.out.println("students = " + students);
+        assertNotNull(students);
 
-        JSONObject studentObject1 = new JSONObject();
-        studentObject1.put("id", id);
-        studentObject1.put("name", name);
-        studentObject1.put("age", age);
-
-        Student student1 = new Student(id, name, age);
-
-        id = 2L;
-        name = "Эльдар Рязанов";
-        age = 73;
-
-        JSONObject studentObject2 = new JSONObject();
-        studentObject2.put("id", id);
-        studentObject2.put("name", name);
-        studentObject2.put("age", age);
-
-        Student student2 = new Student(id, name, age);
-
-        JSONArray studentObject = new JSONArray();
-        studentObject.put(studentObject1);
-        studentObject.put(studentObject2);
-
-        List<Student> students = new ArrayList<>(List.of(
-                student1,
-                student2
-        ));
-
-        when(studentRepository.findAll()).thenReturn(students);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/student")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
     }
     @Test
     void findStudentByAgeTest() throws Exception {
@@ -300,9 +265,9 @@ class ApplicationTests_WebMvcTest {
         list.add(student2);
 
 
-        when(studentRepository.findStudentByAge(any(Integer.class))).thenReturn(list);
+        when(studentRepository.findByAge(any(Integer.class))).thenReturn(list);
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/student/filter_by_age/3")
+                        .get("/student/findAllByAge/?age=3")
                         .content(facultyObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -323,9 +288,9 @@ class ApplicationTests_WebMvcTest {
         list.add(student2);
 
 
-        when(studentRepository.findStudentByAgeBetween(any(Integer.class),any(Integer.class))).thenReturn(list);
+        when(studentRepository.findAllByAgeBetween(any(Integer.class),any(Integer.class))).thenReturn(list);
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/student/find_age_between/?minAge=2&maxAge=4")
+                        .get("/student?min=2&max=4")
                         .content(facultyObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

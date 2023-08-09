@@ -1,14 +1,17 @@
 package ru.hogwarts.school;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import ru.hogwarts.school.controller.FacultyController;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
@@ -16,12 +19,10 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -36,10 +37,10 @@ class ApplicationTests_TestRestTemplate {
     @Autowired
     FacultyRepository facultyRepository;
 
-    @Autowired
+    @InjectMocks
     private StudentController studentController;
 
-    @Autowired
+    @InjectMocks
     private FacultyController facultyController;
 
     @Autowired
@@ -133,12 +134,15 @@ class ApplicationTests_TestRestTemplate {
     public void testEditFaculty() {
         Faculty faculty = new Faculty(findLastFacultyId(), "КотэРван", "серый");
 
-        ResponseEntity<Faculty> response = facultyController.editFaculty(faculty);
+        this.testRestTemplate.put("http://localhost:" + port + "/faculty", faculty);
 
-        int actualStatusCodeValue = response.getStatusCodeValue();
-        int expectedCode = 200;
+        Optional<Faculty> optionalFaculty = facultyRepository.findById(findLastFacultyId());
 
-        Assertions.assertEquals(expectedCode, actualStatusCodeValue, "коды не совпадают");
+        assertTrue(optionalFaculty.isPresent());
+
+        Faculty actualFaculty = optionalFaculty.get();
+
+        assertEquals(faculty, actualFaculty);
     }
 
 

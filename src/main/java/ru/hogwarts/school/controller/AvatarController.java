@@ -17,9 +17,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @RestController
+@RequestMapping("avatar")
 public class AvatarController {
-
     private final AvatarService avatarService;
+
     public AvatarController(AvatarService avatarService) {
         this.avatarService = avatarService;
     }
@@ -30,15 +31,20 @@ public class AvatarController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/{id}/avatar-from-db")
-    public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
+    @PostMapping(value = "/{studentId}/avatarFromInternet", consumes = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<String> uploadAvatarFromInternet(@PathVariable Long studentId, @RequestParam String path, @RequestParam String avatarName) throws IOException {
+        avatarService.uploadAvatarFromInternet(studentId, path, avatarName);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/avatar-from-db")
+    public ResponseEntity <byte[]> downloadAvatar(@PathVariable Long id){
         Avatar avatar = avatarService.findAvatar(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(avatar.getMediaType()));
         headers.setContentLength(avatar.getData().length);
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
-
     @GetMapping(value = "/{id}/avatar-from-file")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException{
         Avatar avatar = avatarService.findAvatar(id);

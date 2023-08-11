@@ -186,11 +186,11 @@ class ApplicationTests_TestRestTemplate {
 
         HttpHeaders headers = new HttpHeaders();
 
-        HttpEntity requestEntity = new HttpEntity<>(null, headers);
+        var requestEntity = new HttpEntity<>(null, headers);
 
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
                 "http://localhost:" + port + "/faculty", HttpMethod.GET, requestEntity,
-                new ParameterizedTypeReference<List<Faculty>>() {
+                new ParameterizedTypeReference<>() {
                 });
 
         List<Faculty> faculties = response.getBody();

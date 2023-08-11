@@ -14,3 +14,14 @@ where age < id;
 
 SELECT * from student
 ORDER BY age;
+
+/*
+ Новая домашка
+ */
+
+SELECT COUNT(*) FROM student;
+
+SELECT avg(age) FROM student;
+
+SELECT * FROM student
+OFFSET 5

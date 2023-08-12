@@ -119,5 +119,6 @@ public class AvatarService {
     public List<Avatar> listAvatars(int page, int size) {
         var request = PageRequest.of(page - 1, size);
         return avatarRepository.findAll(request).getContent();
+        
     }
 }

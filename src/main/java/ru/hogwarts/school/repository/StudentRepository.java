@@ -17,7 +17,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Student> findAllByFaculty_id(Long id);
 
     @Query(value = "select id from student order by id desc limit 1;",nativeQuery = true)
-    Long findLastID();
+    Long getLastID();
 
 
     //- Возможность получить количество всех студентов в школе. Эндпоинт должен вернуть число.

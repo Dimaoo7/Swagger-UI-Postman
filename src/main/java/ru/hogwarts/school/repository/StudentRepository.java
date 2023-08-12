@@ -22,18 +22,18 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     //- Возможность получить количество всех студентов в школе. Эндпоинт должен вернуть число.
     @Query(value = "SELECT COUNT(*) FROM student;", nativeQuery = true)
-    List<Integer> findStudents();
+    List<Integer> getStudents();
 
 
     //- Возможность получить средний возраст студентов. Эндпоинт должен вернуть число.
     @Query(value = "SELECT avg(age) FROM student;", nativeQuery = true)
-    List<Double> findAverageAge();
+    List<Double> getAverageAge();
 
 
     //- Возможность получать только пять последних студентов. Последние студенты считаются теми, у кого идентификатор
     //- меньше 5. Эндпоинт должен вернуть список.
     @Query(value = "SELECT * FROM student OFFSET 5", nativeQuery = true)
-    List<FiveLastStudents> findLastStudents();
+    List<FiveLastStudents> getLastStudents();
 
 
 

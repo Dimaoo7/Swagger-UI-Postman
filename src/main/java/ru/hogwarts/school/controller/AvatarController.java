@@ -1,12 +1,9 @@
 package ru.hogwarts.school.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -18,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @RestController
 @RequestMapping("avatar")
@@ -62,13 +60,9 @@ public class AvatarController {
     }
 
     @GetMapping("/pages")
-    public String listAvatars(Model model,
-                                   @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-                                   @RequestParam(name = "size", required = false, defaultValue = "5") int size){
-        Page<Avatar> avatars = avatarService.listAvatars(PageRequest.of(page, size));
-        model.addAttribute("avatars", avatars);
-
-        return "Avatars";
+    public List<Avatar> listAvatars(@RequestParam(name = "page", required = false, defaultValue = "1") int page,
+                                    @RequestParam(name = "size", required = false, defaultValue = "5") int size){
+        return avatarService.listAvatars(page, size);
     }
 
 }

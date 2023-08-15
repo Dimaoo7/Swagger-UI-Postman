@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exceptions.NotFoundException;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.FiveLastStudents;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.List;
@@ -81,13 +82,28 @@ public class StudentController {
     @GetMapping("/StudentByFaculty/")
     public ResponseEntity<List<Student>> findByFacultyId(Long id) {
         if (id != null) {
-            return ResponseEntity.ok(studentService.findAllStudensByFaculty(id));
+            return ResponseEntity.ok(studentService.findAllStudentsByFaculty(id));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    @GetMapping("/findLastID")
+    public Long findLastID() {
+        return studentService.getLastID();
+    }
 
+    @GetMapping("/getLastStudents")
+    public List<FiveLastStudents> getLastStudents() {
+        return studentService.getLastStudents();
+    }
 
+    @GetMapping("/getStudents")
+    public List<Integer> getStudents() {
+        return studentService.getStudents();
+    }
 
-
+    @GetMapping("/getAverageAge")
+    public List<Double> getAverageAge() {
+        return studentService.getAverageAge();
+    }
 }

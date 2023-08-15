@@ -2,7 +2,7 @@ package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
-import ru.hogwarts.school.repository.AvatarRepository;
+import ru.hogwarts.school.repository.FiveLastStudents;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
@@ -12,12 +12,9 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
 
-    private final AvatarRepository avatarRepository;
 
-
-    public StudentService(StudentRepository studentRepository, AvatarRepository avatarRepository) {
+    public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
-        this.avatarRepository = avatarRepository;
     }
 
     public Student createStudent(Student student) {
@@ -44,12 +41,24 @@ public class StudentService {
         return studentRepository.findAllByAgeBetween(min, max);
     }
 
-    public List<Student> findAllStudensByFaculty(Long id) {
+    public List<Student> findAllStudentsByFaculty(Long id) {
         return studentRepository.findAllByFaculty_id(id);
     }
 
 
-    public java.lang.Long findLastID() {
-        return studentRepository.findLastID();
+    public Long getLastID() {
+        return studentRepository.getLastID();
+    }
+
+    public List<Integer> getStudents() {
+        return studentRepository.getStudents();
+    }
+
+    public List<Double> getAverageAge() {
+        return studentRepository.getAverageAge();
+    }
+
+    public List<FiveLastStudents> getLastStudents() {
+        return studentRepository.getLastStudents();
     }
 }

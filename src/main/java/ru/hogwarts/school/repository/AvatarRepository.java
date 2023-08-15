@@ -12,4 +12,9 @@ public interface AvatarRepository extends JpaRepository<Avatar, Long> {
     Optional<Avatar> findByStudentId(Long studentId);
 
     Optional<Avatar> findAvatarByStudentId(Long studentId);
+
+    //Добавьте пагинацию для репозитория AvatarRepository и контроллер в
+    // AvatarController, чтобы можно было получать списки аватарок постранично.
+
+
 }

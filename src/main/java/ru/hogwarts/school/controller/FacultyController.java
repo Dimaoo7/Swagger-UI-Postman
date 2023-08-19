@@ -81,4 +81,9 @@ public class FacultyController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+    @GetMapping("/findLastID")
+    public Long findLastID() {
+        return facultyService.findLastID();
+    }
 }

@@ -5,12 +5,6 @@ CREATE TABLE person (
     vehicle_owner  BOOLEAN
 );
 
-create table person (
-                        id serial primary key ,
-                        name varchar(225),
-                        age int,
-                        vehicle_owner boolean);
-
 CREATE TABLE vehicle (
     id INTEGER NOT NULL,
     model VARCHAR(255) NOT NULL,

@@ -59,11 +59,11 @@ public class StudentServiceTest {
 
 
         Student student = new Student(1L, "Name", 1);
-        Mockito.when(studentRepository.findById(1L)).thenReturn(Optional.ofNullable(student));
+        Mockito.when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
 
         studentService.createStudent(new Student(1L, "Name", 1));
 
-        Optional<Student> expected = Optional.ofNullable(new Student(1L, "Name", 1));
+        Optional<Student> expected = Optional.of(new Student(1L, "Name", 1));
 
         Optional<Student> actual = studentService.findStudent(1L);
 
@@ -104,10 +104,8 @@ public class StudentServiceTest {
         Mockito.when(studentRepository.save(new Student(3L, "Name2", 2))).thenReturn(new Student(3L, "Name2", 2));
         Mockito.when(studentRepository.save(new Student(4L, "Name3", 4))).thenReturn(new Student(4L, "Name3", 4));
 
-        Student student = studentService.createStudent(new Student(1L, "Name", 1));
         Student student1 = studentService.createStudent(new Student(2L, "Name1", 2));
         Student student2 = studentService.createStudent(new Student(3L, "Name2", 2));
-        Student student3 = studentService.createStudent(new Student(4L, "Name3", 4));
 
 
         List<Student> expected = new ArrayList<>();
@@ -128,7 +126,6 @@ public class StudentServiceTest {
         Mockito.when(studentRepository.save(new Student(3L, "Name2", 2))).thenReturn(new Student(3L, "Name2", 2));
         Mockito.when(studentRepository.save(new Student(4L, "Name3", 4))).thenReturn(new Student(4L, "Name3", 4));
 
-        Student student = studentService.createStudent(new Student(1L, "Name", 1));
         Student student1 = studentService.createStudent(new Student(2L, "Name1", 2));
         Student student2 = studentService.createStudent(new Student(3L, "Name2", 2));
         Student student3 = studentService.createStudent(new Student(4L, "Name3", 4));
@@ -170,7 +167,7 @@ public class StudentServiceTest {
 
         Mockito.when(studentRepository.findAllByFaculty_id(faculty.getId())).thenReturn(expected);
 
-        List<Student> actual = studentService.findAllStudensByFaculty(faculty.getId());
+        List<Student> actual = studentService.findAllStudentsByFaculty(faculty.getId());
 
         assertEquals(expected,actual);
 
@@ -182,8 +179,6 @@ public class StudentServiceTest {
     void findAvatarTest() {
         Mockito.when(avatarRepository.findByStudentId(1L))
                 .thenReturn(Optional.of(new Avatar()));
-
-        Student student = studentService.createStudent(new Student(1L, "Name", 1));
 
         Optional<Avatar> expected = Optional.of(new Avatar());
 

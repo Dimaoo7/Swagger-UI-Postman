@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +60,14 @@ public class FacultyService {
         return facultyRepository.findByStudent_id(id);
     }
 
-    public java.lang.Long findLastID() {
+    public Long findLastID() {
         logger.debug("Вызван метод findLastID");
         return facultyRepository.findLastID();
+    }
+
+    public Optional<Faculty> longestFacultyName() {
+        logger.debug("Вызван метод longestFaculty");
+        return facultyRepository.findAll().stream()
+                .max(Comparator.comparingInt(f -> f.getName().length()));
     }
 }

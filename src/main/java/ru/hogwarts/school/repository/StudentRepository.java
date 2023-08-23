@@ -25,9 +25,10 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     List<Integer> getStudents();
 
 
+    // По дамашке сказано надо взять средний возраст из метода findAll
     //- Возможность получить средний возраст студентов. Эндпоинт должен вернуть число.
-    @Query(value = "SELECT avg(age) FROM student;", nativeQuery = true)
-    List<Double> getAverageAge();
+ //   @Query(value = "SELECT avg(age) FROM student;", nativeQuery = true)
+  //  List<Double> getAverageAge();
 
 
     //- Возможность получать только пять последних студентов. Последние студенты считаются теми, у кого идентификатор

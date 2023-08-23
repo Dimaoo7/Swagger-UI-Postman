@@ -85,6 +85,11 @@ class ApplicationTests_TestRestTemplate {
                 "http://localhost:" + port + "/student", student, String.class));
     }
 
+    @Test
+    void findAllStartsWithA(){
+        assertNotNull(this.testRestTemplate.getForObject(
+                "http://localhost:" + port + "/student/findAllStartsWithA", String.class));
+    }
 
     @Test
     void testPostFaculty() {

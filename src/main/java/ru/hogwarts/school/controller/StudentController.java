@@ -117,4 +117,9 @@ public class StudentController {
     public Integer returnInteger() {
         return studentService.getInteger();
     }
+
+    @GetMapping("/getStudentNames")
+    public String getStudentNames() {
+        return studentService.getStudentNames();
+    }
 }

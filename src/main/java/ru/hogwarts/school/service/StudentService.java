@@ -97,4 +97,16 @@ public class StudentService {
                 .parallel()
                 .reduce(0, Integer::sum); //1784293664
     }
+
+    //Многопоточный вывод имен
+    public String getStudentNames() {
+        logger.debug("Вызван метод getNames");
+        var a = studentRepository.findAll();
+        System.out.println("Основной поток: ");
+        for (int i = 0; i <= 2; i++) {
+            System.out.println( a.get(i).getName() + " ");
+        }
+
+
+        }
 }

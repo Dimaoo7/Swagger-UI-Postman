@@ -118,8 +118,8 @@ public class StudentController {
         return studentService.getInteger();
     }
 
-    @GetMapping("/getStudentNames")
-    public String getStudentNames() {
-        return studentService.getStudentNames();
+    @GetMapping("/getStudentNamesTreads")
+    public void getStudentNamesTreads() {
+        studentService.getStudentNamesThreads();
     }
 }

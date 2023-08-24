@@ -99,14 +99,27 @@ public class StudentService {
     }
 
     //Многопоточный вывод имен
-    public String getStudentNames() {
+    public void getStudentNamesThreads() {
         logger.debug("Вызван метод getNames");
         var a = studentRepository.findAll();
         System.out.println("Основной поток: ");
-        for (int i = 0; i <= 2; i++) {
-            System.out.println( a.get(i).getName() + " ");
+        final int[] num = {0};
+        for (; num[0] < 2; num[0]++) {
+            System.out.println( a.get(num[0]).getName() + " ");
         }
-
-
+        new Thread(() -> {
+            System.out.println("Параллельный поток");
+            for (; num[0] < 4; num[0]++) {
+                System.out.println( a.get(num[0]).getName() + " ");
+            }
+        })
+                .start();
+        new Thread(() -> {
+            System.out.println("Второй параллельный поток");
+            for (; num[0] < 6; num[0]++) {
+                System.out.println( a.get(num[0]).getName() + " ");
+            }
+        })
+                .start();
         }
 }

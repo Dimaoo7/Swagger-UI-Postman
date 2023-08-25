@@ -9,6 +9,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class StudentService {
@@ -67,13 +68,58 @@ public class StudentService {
         return studentRepository.getStudents();
     }
 
-    public List<Double> getAverageAge() {
+    public Double getAverageAge() {
         logger.debug("Вызван метод getAverageAge");
-        return studentRepository.getAverageAge();
+        return studentRepository.findAll().stream()
+                .map(Student::getAge)
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0);
     }
 
     public List<FiveLastStudents> getLastStudents() {
         logger.debug("Вызван метод getLastStudents");
         return studentRepository.getLastStudents();
     }
+
+    public Stream<Student> findAllStartsWithA() {
+        logger.debug("Вызван метод findAllStartsWithA");
+        return studentRepository.findAll().stream()
+                .filter(student -> student.getName().startsWith("A"));
+    }
+
+    public int getInteger() {
+        logger.debug("Вызван метод returnInteger");
+      // return  Stream.iterate(1, a -> a +1) .limit(1_000_000) .reduce(0, (a, b) -> a + b ); //1784293664
+
+        return Stream.iterate(1, a -> a +1)
+                .limit(1_000_000)
+                .parallel()
+                .reduce(0, Integer::sum); //1784293664
+    }
+
+    //Многопоточный вывод имен
+    public void getStudentNamesThreads() {
+        logger.debug("Вызван метод getNames");
+        var a = studentRepository.findAll();
+        System.out.println("Основной поток: ");
+        final int[] num = {0};
+        for (; num[0] < 2; num[0]++) {
+            System.out.println( a.get(num[0]).getName() + " ");
+        }
+        new Thread(() -> {
+            System.out.println("Параллельный поток");
+            for (; num[0] < 4; num[0]++) {
+                System.out.println( a.get(num[0]).getName() + " ");
+            }
+        })
+                .start();
+        new Thread(() -> {
+            System.out.println("Второй параллельный поток");
+            for (; num[0] < 6; num[0]++) {
+                System.out.println( a.get(num[0]).getName() + " ");
+            }
+        })
+                .start();
+        }
 }

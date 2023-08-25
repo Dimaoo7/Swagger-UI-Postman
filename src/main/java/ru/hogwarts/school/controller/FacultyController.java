@@ -86,4 +86,9 @@ public class FacultyController {
     public Long findLastID() {
         return facultyService.findLastID();
     }
+
+    @GetMapping("/longestFacultyName")
+    public Optional<Faculty> longestFacultyName() {
+        return facultyService.longestFacultyName();
+    }
 }

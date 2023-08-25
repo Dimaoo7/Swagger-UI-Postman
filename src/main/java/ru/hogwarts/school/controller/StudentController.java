@@ -10,6 +10,7 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @RestController
@@ -103,7 +104,22 @@ public class StudentController {
     }
 
     @GetMapping("/getAverageAge")
-    public List<Double> getAverageAge() {
+    public Double getAverageAge() {
         return studentService.getAverageAge();
+    }
+
+    @GetMapping("/findAllStartsWithA")
+    public Stream<Student> findAllStartsWithA() {
+        return studentService.findAllStartsWithA();
+    }
+
+    @GetMapping("/returnInteger")
+    public Integer returnInteger() {
+        return studentService.getInteger();
+    }
+
+    @GetMapping("/getStudentNamesTreads")
+    public void getStudentNamesTreads() {
+        studentService.getStudentNamesThreads();
     }
 }

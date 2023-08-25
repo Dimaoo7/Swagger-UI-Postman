@@ -117,12 +117,12 @@ public class StudentController {
     public Integer returnInteger() {
         return studentService.getInteger();
     }
-
+    // Многопоточный вывод имен
     @GetMapping("/getStudentNamesTreads")
     public String getStudentNamesTreads() {
        return studentService.getStudentNamesThreads();
     }
-
+    // Синхронизация потока
     @GetMapping("/SynchronizedTreads")
     public String SynchronizedTreads() {
         return studentService.getStudentSynchronizedTreads();

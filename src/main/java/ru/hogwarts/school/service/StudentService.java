@@ -98,7 +98,7 @@ public class StudentService {
                 .reduce(0, Integer::sum); //1784293664
     }
 
-    //Многопоточный вывод имен
+    //Многопоточный вывод имен первая половина дм
     public String  getStudentNamesThreads() {
         logger.debug("Вызван метод getNames");
         var findAll = studentRepository.findAll();
@@ -124,7 +124,7 @@ public class StudentService {
         return "Многопоточный вывод имен";
         }
 
-    //Синхронизация потока
+    //Синхронизация потока вторая половина дм
     public String getStudentSynchronizedTreads() {
         logger.debug("Вызван метод getStudentSynchronizedTreads");
 

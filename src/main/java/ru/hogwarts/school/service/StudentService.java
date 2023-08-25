@@ -99,27 +99,54 @@ public class StudentService {
     }
 
     //Многопоточный вывод имен
-    public void getStudentNamesThreads() {
+    public String  getStudentNamesThreads() {
         logger.debug("Вызван метод getNames");
-        var a = studentRepository.findAll();
+        var findAll = studentRepository.findAll();
         System.out.println("Основной поток: ");
         final int[] num = {0};
         for (; num[0] < 2; num[0]++) {
-            System.out.println( a.get(num[0]).getName() + " ");
+            System.out.println( findAll.get(num[0]).getName() + " ");
         }
         new Thread(() -> {
             System.out.println("Параллельный поток");
             for (; num[0] < 4; num[0]++) {
-                System.out.println( a.get(num[0]).getName() + " ");
+                System.out.println( findAll.get(num[0]).getName() + " ");
             }
         })
                 .start();
         new Thread(() -> {
             System.out.println("Второй параллельный поток");
             for (; num[0] < 6; num[0]++) {
-                System.out.println( a.get(num[0]).getName() + " ");
+                System.out.println( findAll.get(num[0]).getName() + " ");
             }
         })
                 .start();
+        return "Многопоточный вывод имен";
         }
+
+    //Синхронизация потока
+    public String getStudentSynchronizedTreads() {
+        logger.debug("Вызван метод getStudentSynchronizedTreads");
+
+        System.out.println("Имя 0 студента: " + studentRepository.findAll().get(0).getName());
+        System.out.println("Имя 1 студента: " + studentRepository.findAll().get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            synchronized (StudentService.class){
+                System.out.println("Имя 2 студента: " + studentRepository.findAll().get(2).getName());}
+            synchronized (StudentService.class){
+                System.out.println("Имя 3 студента: " + studentRepository.findAll().get(3).getName());}
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(() -> {
+            synchronized (StudentService.class){
+                System.out.println("Имя 4 студента: " + studentRepository.findAll().get(4).getName());}
+            synchronized (StudentService.class){
+                System.out.println("Имя 5 студента: " + studentRepository.findAll().get(5).getName());}
+        });
+        thread2.start();
+        return "Синхронизация потока";
+
+    }
 }

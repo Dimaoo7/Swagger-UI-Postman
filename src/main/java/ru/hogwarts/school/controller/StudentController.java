@@ -119,7 +119,12 @@ public class StudentController {
     }
 
     @GetMapping("/getStudentNamesTreads")
-    public void getStudentNamesTreads() {
-        studentService.getStudentNamesThreads();
+    public String getStudentNamesTreads() {
+       return studentService.getStudentNamesThreads();
+    }
+
+    @GetMapping("/SynchronizedTreads")
+    public String SynchronizedTreads() {
+        return studentService.getStudentSynchronizedTreads();
     }
 }
